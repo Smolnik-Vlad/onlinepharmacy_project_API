@@ -12,8 +12,8 @@ urlpatterns = [
     path('new_employee/', EmployeeCreateView.as_view()),  # endpoint to create a new
     path('employee/<slug:slug>/', EmployeeRetrieveUpdateDeleteView.as_view()),  # endpoint to update or delete employee
 
-    path('auth/', include('djoser.urls')),
-    re_path(r'^auth/', include('djoser.urls.authtoken')),  # authorization
+    # path('auth/', include('djoser.urls')),
+    # re_path(r'^auth/', include('djoser.urls.authtoken')),  # authorization
     path('auth/', include('djoser.urls.jwt')),
     # path("api/accounts/", include("users.urls")),
 

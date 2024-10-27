@@ -26,6 +26,7 @@ class CommonUser(AbstractUser):
 
     def save(self, *args, **kwargs):
         slug_data = self.email.split('@')[0]
+        print(f"Create slug: {slug_data}")
         self.slug = slugify(slug_data)
         return super(CommonUser, self).save(*args, **kwargs)
 

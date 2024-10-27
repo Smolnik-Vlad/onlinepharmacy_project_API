@@ -11,9 +11,11 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 import os
+from datetime import timedelta
 
 from pathlib import Path
 from dotenv import load_dotenv, find_dotenv
+
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -55,6 +57,8 @@ INSTALLED_APPS = [
     'djoser',
     'rest_framework_simplejwt',
     'django_celery_beat',
+    'corsheaders',
+
 ]
 
 REST_FRAMEWORK = {
@@ -76,12 +80,20 @@ REST_FRAMEWORK = {
 
     'DEFAULT_AUTHENTICATION_CLASSES': [
         # Session authentication
-        'rest_framework.authentication.TokenAuthentication',
+        # 'rest_framework.authentication.TokenAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         # 'rest_framework.authentication.BasicAuthentication',
         # 'rest_framework.authentication.SessionAuthentication',
 
     ]
+}
+
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # Время жизни access-токена
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),     # Время жизни refresh-токена
+    'ROTATE_REFRESH_TOKENS': False,                  # Обновление refresh-токена при каждом запросе
+    'BLACKLIST_AFTER_ROTATION': True,                # Blacklist старых токенов после ротации
 }
 
 DJOSER = {
@@ -104,6 +116,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'config.middleware.LogHeadersMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -126,18 +141,16 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
+CORS_ALLOW_ALL_ORIGINS = True
+
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'pharma-password',
-        'HOST': 'db',
-        'PORT': 5432,
+        'ENGINE': 'django.db.backends.sqlite3',  # Указываем движок SQLite
+        'NAME': BASE_DIR / 'db.sqlite3',         # Путь к файлу базы данных
     }
 }
 
@@ -204,3 +217,14 @@ CELERY_BEAT_SCHEDULE = {
 # Stripe payment system
 STRIPE_PUBLIC_KEY = os.environ['STRIPE_PUBLIC_KEY']
 STRIPE_PRIVATE_KEY = os.environ['STRIPE_PRIVATE_KEY']
+
+SWAGGER_SETTINGS = {
+    'USE_SESSION_AUTH': False,
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    }
+}
